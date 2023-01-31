@@ -21,6 +21,8 @@ public partial class Labb2_SkolanDbContext : DbContext
 
     public virtual DbSet<Course> Courses { get; set; }
 
+    public virtual DbSet<Department> Departments { get; set; }
+
     public virtual DbSet<Grade> Grades { get; set; }
 
     public virtual DbSet<Staff> Staff { get; set; }
@@ -31,9 +33,19 @@ public partial class Labb2_SkolanDbContext : DbContext
 
     public virtual DbSet<TeacherCourse> TeacherCourses { get; set; }
 
+    public virtual DbSet<VwGetCourseGradesAlpha> VwGetCourseGradesAlphas { get; set; }
+
+    public virtual DbSet<VwGetCourseGradesNumeric> VwGetCourseGradesNumerics { get; set; }
+
+    public virtual DbSet<VwGradesLastMonth> VwGradesLastMonths { get; set; }
+
+    public virtual DbSet<VwStudentsInClass> VwStudentsInClasses { get; set; }
+
+    public virtual DbSet<VwTeachersClass> VwTeachersClasses { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source = LAPTOP-PCBVJLD6;Initial Catalog = Labb2_Skolan;Integrated Security = True;TrustServerCertificate = True");
+        => optionsBuilder.UseSqlServer("Data Source = LAPTOP-PCBVJLD6;Initial Catalog=Labb2_Skolan;Integrated Security = True;TrustServerCertificate = True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -69,6 +81,14 @@ public partial class Labb2_SkolanDbContext : DbContext
             entity.Property(e => e.CourseName).HasMaxLength(50);
         });
 
+        modelBuilder.Entity<Department>(entity =>
+        {
+            entity.ToTable("Department");
+
+            entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
+            entity.Property(e => e.DepName).HasMaxLength(50);
+        });
+
         modelBuilder.Entity<Grade>(entity =>
         {
             entity.HasKey(e => e.GradeId).HasName("PK__Grades__54F87A374F365CB7");
@@ -101,6 +121,7 @@ public partial class Labb2_SkolanDbContext : DbContext
 
             entity.Property(e => e.StaffId).HasColumnName("StaffID");
             entity.Property(e => e.AddressId).HasColumnName("AddressID");
+            entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
             entity.Property(e => e.FName)
                 .HasMaxLength(50)
                 .HasColumnName("fName");
@@ -108,11 +129,16 @@ public partial class Labb2_SkolanDbContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("lName");
             entity.Property(e => e.Position).HasMaxLength(20);
+            entity.Property(e => e.Salary).HasColumnType("decimal(18, 0)");
             entity.Property(e => e.SocialNr).HasMaxLength(13);
 
             entity.HasOne(d => d.Address).WithMany(p => p.Staff)
                 .HasForeignKey(d => d.AddressId)
                 .HasConstraintName("FK__Staff__AddressID__267ABA7A");
+
+            entity.HasOne(d => d.Department).WithMany(p => p.Staff)
+                .HasForeignKey(d => d.DepartmentId)
+                .HasConstraintName("FK_Staff_Department");
         });
 
         modelBuilder.Entity<Student>(entity =>
@@ -168,6 +194,68 @@ public partial class Labb2_SkolanDbContext : DbContext
             entity.HasOne(d => d.Teacher).WithMany(p => p.TeacherCourses)
                 .HasForeignKey(d => d.TeacherId)
                 .HasConstraintName("FK__TeacherCo__Teach__3C69FB99");
+        });
+
+        modelBuilder.Entity<VwGetCourseGradesAlpha>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwGetCourseGradesAlpha");
+
+            entity.Property(e => e.HögstaBetyg)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .HasColumnName("Högsta betyg");
+            entity.Property(e => e.Kurs).HasMaxLength(50);
+            entity.Property(e => e.LägstaBetyg)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .HasColumnName("Lägsta betyg");
+            entity.Property(e => e.Medelbetyg)
+                .HasMaxLength(1)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<VwGetCourseGradesNumeric>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwGetCourseGradesNumeric");
+
+            entity.Property(e => e.HögstaBetyg).HasColumnName("Högsta betyg");
+            entity.Property(e => e.Kurs).HasMaxLength(50);
+            entity.Property(e => e.LägstaBetyg).HasColumnName("Lägsta betyg");
+        });
+
+        modelBuilder.Entity<VwGradesLastMonth>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwGradesLastMonth");
+
+            entity.Property(e => e.Betyg).HasMaxLength(3);
+            entity.Property(e => e.Datum).HasColumnType("date");
+            entity.Property(e => e.Kurs).HasMaxLength(50);
+            entity.Property(e => e.Namn).HasMaxLength(101);
+        });
+
+        modelBuilder.Entity<VwStudentsInClass>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwStudentsInClass");
+
+            entity.Property(e => e.Klass).HasMaxLength(10);
+        });
+
+        modelBuilder.Entity<VwTeachersClass>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwTeachersClasses");
+
+            entity.Property(e => e.Klass).HasMaxLength(10);
+            entity.Property(e => e.Namn).HasMaxLength(101);
         });
 
         OnModelCreatingPartial(modelBuilder);

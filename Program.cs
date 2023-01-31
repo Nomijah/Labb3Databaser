@@ -6,7 +6,9 @@ namespace Labb3Databaser
     {
         static void Main(string[] args)
         {
-            RunProgram();
+            //RunProgram();
+            var context = new Labb2_SkolanDbContext();
+            context.SaveChanges();
         }
 
         public static void RunProgram()

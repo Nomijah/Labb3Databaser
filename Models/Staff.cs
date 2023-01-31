@@ -17,7 +17,13 @@ public partial class Staff
 
     public int? AddressId { get; set; }
 
+    public decimal? Salary { get; set; }
+
+    public int? DepartmentId { get; set; }
+
     public virtual AddressBook? Address { get; set; }
+
+    public virtual Department? Department { get; set; }
 
     public virtual ICollection<Teacher> Teachers { get; } = new List<Teacher>();
 }
