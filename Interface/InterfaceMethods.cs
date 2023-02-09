@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Labb3Databaser.Models;
 
-namespace Labb3Databaser.Models
+namespace Labb3Databaser.Interface
 {
     internal class InterfaceMethods
     {
@@ -106,7 +107,7 @@ namespace Labb3Databaser.Models
             int input = 0;
             do
             {
-                while (!Int32.TryParse(Console.ReadLine(), out input))
+                while (!int.TryParse(Console.ReadLine(), out input))
                 {
                     Console.WriteLine("Ange endast siffror, försök igen:");
                 }

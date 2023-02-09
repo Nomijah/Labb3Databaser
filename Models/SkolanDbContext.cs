@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Labb3Databaser.Models;
 
-public partial class Labb2_SkolanDbContext : DbContext
+public partial class SkolanDbContext : DbContext
 {
-    public Labb2_SkolanDbContext()
+    public SkolanDbContext()
     {
     }
 
-    public Labb2_SkolanDbContext(DbContextOptions<Labb2_SkolanDbContext> options)
+    public SkolanDbContext(DbContextOptions<SkolanDbContext> options)
         : base(options)
     {
     }
@@ -33,11 +33,15 @@ public partial class Labb2_SkolanDbContext : DbContext
 
     public virtual DbSet<TeacherCourse> TeacherCourses { get; set; }
 
+    public virtual DbSet<VwAvgSalaryDep> VwAvgSalaryDeps { get; set; }
+
     public virtual DbSet<VwGetCourseGradesAlpha> VwGetCourseGradesAlphas { get; set; }
 
     public virtual DbSet<VwGetCourseGradesNumeric> VwGetCourseGradesNumerics { get; set; }
 
     public virtual DbSet<VwGradesLastMonth> VwGradesLastMonths { get; set; }
+
+    public virtual DbSet<VwStudentsGrade> VwStudentsGrades { get; set; }
 
     public virtual DbSet<VwStudentsInClass> VwStudentsInClasses { get; set; }
 
@@ -122,6 +126,7 @@ public partial class Labb2_SkolanDbContext : DbContext
             entity.Property(e => e.StaffId).HasColumnName("StaffID");
             entity.Property(e => e.AddressId).HasColumnName("AddressID");
             entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
+            entity.Property(e => e.EmploymentDate).HasColumnType("date");
             entity.Property(e => e.FName)
                 .HasMaxLength(50)
                 .HasColumnName("fName");
@@ -196,6 +201,16 @@ public partial class Labb2_SkolanDbContext : DbContext
                 .HasConstraintName("FK__TeacherCo__Teach__3C69FB99");
         });
 
+        modelBuilder.Entity<VwAvgSalaryDep>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwAvgSalaryDep");
+
+            entity.Property(e => e.Avdelning).HasMaxLength(50);
+            entity.Property(e => e.Medellön).HasMaxLength(4000);
+        });
+
         modelBuilder.Entity<VwGetCourseGradesAlpha>(entity =>
         {
             entity
@@ -237,6 +252,26 @@ public partial class Labb2_SkolanDbContext : DbContext
             entity.Property(e => e.Datum).HasColumnType("date");
             entity.Property(e => e.Kurs).HasMaxLength(50);
             entity.Property(e => e.Namn).HasMaxLength(101);
+        });
+
+        modelBuilder.Entity<VwStudentsGrade>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VwStudentsGrades");
+
+            entity.Property(e => e.HögstaBetyg)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .HasColumnName("Högsta betyg");
+            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.LägstaBetyg)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .HasColumnName("Lägsta betyg");
+            entity.Property(e => e.Medelbetyg)
+                .HasMaxLength(1)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<VwStudentsInClass>(entity =>

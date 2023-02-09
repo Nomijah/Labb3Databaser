@@ -21,6 +21,8 @@ public partial class Staff
 
     public int? DepartmentId { get; set; }
 
+    public DateTime? EmploymentDate { get; set; }
+
     public virtual AddressBook? Address { get; set; }
 
     public virtual Department? Department { get; set; }
